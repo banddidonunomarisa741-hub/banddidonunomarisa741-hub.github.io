@@ -1,0 +1,37 @@
+{
+  "nation": "蒙德",
+  "status": "reviewed-scores-and-source-links",
+  "playableScores": 1,
+  "entries": [
+    {
+      "id": "genshin-1046985900051922950",
+      "nation": "蒙德",
+      "title": "希望的新一天",
+      "area": "蒙德地区",
+      "url": "https://www.bilibili.com/opus/1046985900051922950"
+    },
+    {
+      "id": "genshin-1044017214379786264",
+      "nation": "蒙德",
+      "title": "青空",
+      "area": "蒙德地区",
+      "url": "https://www.bilibili.com/opus/1044017214379786264"
+    },
+    {
+      "id": "genshin-1027473206523461635",
+      "nation": "蒙德",
+      "title": "蒙德的午夜",
+      "area": "蒙德城夜间",
+      "url": "https://www.bilibili.com/opus/1027473206523461635"
+    }
+  ],
+  "builtins": [
+    {
+      "title": "希望的新一天",
+      "file": "a-new-day-with-hope-page1.json",
+      "originalImage": "a-new-day-with-hope-page1.png",
+      "measures": 28,
+      "scope": "用户提供页的七键简化旋律；逐小节校对，非完整原曲"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "nation": "须弥",
+  "status": "reviewed-scores-and-source-links",
+  "playableScores": 1,
+  "entries": [
+    {
+      "id": "genshin-839170591719161876",
+      "nation": "须弥",
+      "title": "慧光启曙",
+      "area": "须弥城",
+      "url": "https://www.bilibili.com/opus/839170591719161876"
+    },
+    {
+      "id": "genshin-837693883162820739",
+      "nation": "须弥",
+      "title": "随风而逝的旧梦",
+      "area": "雨林",
+      "url": "https://www.bilibili.com/opus/837693883162820739"
+    },
+    {
+      "id": "genshin-782031111490371636",
+      "nation": "须弥",
+      "title": "常绿的希冀",
+      "area": "须弥城",
+      "url": "https://www.bilibili.com/opus/782031111490371636"
+    },
+    {
+      "id": "genshin-809282412763676744",
+      "nation": "须弥",
+      "title": "星灭光离",
+      "area": "沙漠战斗音乐",
+      "url": "https://www.bilibili.com/opus/809282412763676744"
+    }
+  ],
+  "builtins": [
+    {
+      "title": "熙攘的街市",
+      "file": "hustle-and-bustle-page1.json",
+      "originalImage": "hustle-and-bustle-page1.png",
+      "measures": 44,
+      "scope": "用户提供页的七键简化旋律；逐小节校对，非完整原曲"
+    }
+  ]
+}

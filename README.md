@@ -1,0 +1,1 @@
+Published website assets only. The application source repository and development history are private. Website: https://banddidonunomarisa741-hub.github.io/-/ . Browser runtime assets are public by necessity. See LICENSE and THIRD_PARTY_NOTICES.md for retained rights and upstream terms.

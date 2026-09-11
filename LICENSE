@@ -1,0 +1,24 @@
+Private development notice — effective 2026-09-11
+
+Copyright (c) 2026 banddidonunomarisa741-hub and the respective contributors.
+
+Original contributions first introduced after public commit
+db472942351c37de35e049fb8c4a6e7b0ca30eab are reserved for private development.
+To the extent controlled by their copyright holders, all rights in those new
+contributions are reserved. No permission to use, copy, modify, distribute,
+publish, sublicense, or sell those new contributions is granted by this file.
+Any such permission must be obtained separately from the relevant holders.
+
+This notice does not revoke or restrict permissions already granted under
+the MIT license for previously published code and documentation. The former
+project MIT notice is preserved in notices/PROJECT-LEGACY-MIT.txt and remains
+applicable to material previously licensed under it. Repository visibility
+does not undo earlier public disclosure or prior license grants.
+
+Third-party software, sound data, music compositions, sheet music and
+user-provided transcriptions retain their own terms and rights. This notice
+does not relicense them. Keep all required upstream LICENSE and NOTICE files.
+See THIRD_PARTY_NOTICES.md for attribution, source links and exclusions.
+
+This notice does not assert that any patent application has been filed,
+that any patent has been granted, or that prior disclosure has been undone.

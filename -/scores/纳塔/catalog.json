@@ -1,0 +1,28 @@
+{
+  "nation": "纳塔",
+  "status": "source-links-only",
+  "playableScores": 0,
+  "entries": [
+    {
+      "id": "genshin-974021389320192053",
+      "nation": "纳塔",
+      "title": "纳塔",
+      "area": "地区主题",
+      "url": "https://www.bilibili.com/opus/974021389320192053"
+    },
+    {
+      "id": "genshin-994662894762197025",
+      "nation": "纳塔",
+      "title": "苍原的颂灵歌",
+      "area": "战斗音乐",
+      "url": "https://www.bilibili.com/opus/994662894762197025"
+    },
+    {
+      "id": "genshin-1051810179149987875",
+      "nation": "纳塔",
+      "title": "静夜的轻语",
+      "area": "郊外夜间",
+      "url": "https://www.bilibili.com/opus/1051810179149987875"
+    }
+  ]
+}

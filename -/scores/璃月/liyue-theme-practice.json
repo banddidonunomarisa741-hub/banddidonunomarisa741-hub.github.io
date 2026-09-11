@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "title": "璃月主题·练习片段",
+  "tonic": "D",
+  "bpm": 88,
+  "meter": "4/4",
+  "nation": "璃月",
+  "sourceUrl": "https://www.bilibili.com/opus/776975067412168900",
+  "notation": "1 2 3 5 | 5:2 3:1 2:1 | 1 2 3 5 | 6:2 5:2\n5 6 1' 2' | 3':2 2':1 1':1 | 6 5 3 2 | 1:4",
+  "uncertainties": [],
+  "edition": {
+    "scope": "主旋律主题动机的八小节练习片段，非完整原曲",
+    "arrangement": "单声部七键简化，便于网页直接演奏",
+    "sourceKind": "公开曲目入口；此处为短片段练习编配",
+    "reviewLimit": "音高和时值按本项目练习编配复核，不代表完整官方谱"
+  }
+}

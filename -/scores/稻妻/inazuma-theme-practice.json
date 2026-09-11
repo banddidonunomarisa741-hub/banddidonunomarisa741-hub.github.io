@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "title": "稻妻主题·练习片段",
+  "tonic": "A",
+  "bpm": 92,
+  "meter": "4/4",
+  "nation": "稻妻",
+  "sourceUrl": "https://www.bilibili.com/opus/835467385017204742",
+  "notation": "6 6 1' 2' | 3':2 2':1 1':1 | 6 6 1' 2' | 5:2 3:1 2:1\n2 3 5 6 | 1':2 7:1 6:1 | 5 3 2 1 | 6,:4",
+  "uncertainties": [],
+  "edition": {
+    "scope": "地区主题动机的八小节练习片段，非完整原曲",
+    "arrangement": "单声部七键简化，保留上行和回落动机",
+    "sourceKind": "公开曲目入口；此处为短片段练习编配",
+    "reviewLimit": "音高和时值按本项目练习编配复核，不代表完整官方谱"
+  }
+}

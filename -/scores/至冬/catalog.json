@@ -1,0 +1,28 @@
+{
+  "nation": "至冬",
+  "status": "source-links-only",
+  "playableScores": 0,
+  "entries": [
+    {
+      "id": "genshin-1137901973922643972",
+      "nation": "至冬",
+      "title": "飞觥走斝",
+      "area": "挪德卡莱 · 那夏镇",
+      "url": "https://www.bilibili.com/opus/1137901973922643972"
+    },
+    {
+      "id": "genshin-1132443723368497161",
+      "nation": "至冬",
+      "title": "船歌优稳",
+      "area": "挪德卡莱 · 那夏镇白天",
+      "url": "https://www.bilibili.com/opus/1132443723368497161"
+    },
+    {
+      "id": "genshin-1135041341007331393",
+      "nation": "至冬",
+      "title": "初焙的恬脆",
+      "area": "挪德卡莱 · 蛋卷工坊",
+      "url": "https://www.bilibili.com/opus/1135041341007331393"
+    }
+  ]
+}

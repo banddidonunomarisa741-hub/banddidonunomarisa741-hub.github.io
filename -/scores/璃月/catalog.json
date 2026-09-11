@@ -1,0 +1,35 @@
+{
+  "nation": "璃月",
+  "status": "source-links-only",
+  "playableScores": 0,
+  "entries": [
+    {
+      "id": "genshin-776975067412168900",
+      "nation": "璃月",
+      "title": "璃月",
+      "area": "地区主题",
+      "url": "https://www.bilibili.com/opus/776975067412168900"
+    },
+    {
+      "id": "genshin-970171264645726210",
+      "nation": "璃月",
+      "title": "春尽水如天",
+      "area": "沉玉谷悬练山",
+      "url": "https://www.bilibili.com/opus/970171264645726210"
+    },
+    {
+      "id": "genshin-763847955136381154",
+      "nation": "璃月",
+      "title": "偷闲浮生",
+      "area": "庆云顶",
+      "url": "https://www.bilibili.com/opus/763847955136381154"
+    },
+    {
+      "id": "genshin-779433511010435204",
+      "nation": "璃月",
+      "title": "鲜衣游侠",
+      "area": "战斗音乐",
+      "url": "https://www.bilibili.com/opus/779433511010435204"
+    }
+  ]
+}

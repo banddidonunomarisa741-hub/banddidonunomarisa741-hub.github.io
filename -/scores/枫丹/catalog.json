@@ -1,0 +1,28 @@
+{
+  "nation": "枫丹",
+  "status": "source-links-only",
+  "playableScores": 0,
+  "entries": [
+    {
+      "id": "genshin-1076120746271440899",
+      "nation": "枫丹",
+      "title": "万水汇流之地",
+      "area": "露景泉",
+      "url": "https://www.bilibili.com/opus/1076120746271440899"
+    },
+    {
+      "id": "genshin-1044759638100148232",
+      "nation": "枫丹",
+      "title": "煦风染细浪",
+      "area": "柔灯港",
+      "url": "https://www.bilibili.com/opus/1044759638100148232"
+    },
+    {
+      "id": "genshin-1040876665562988547",
+      "nation": "枫丹",
+      "title": "新的希望",
+      "area": "新枫丹科学院",
+      "url": "https://www.bilibili.com/opus/1040876665562988547"
+    }
+  ]
+}

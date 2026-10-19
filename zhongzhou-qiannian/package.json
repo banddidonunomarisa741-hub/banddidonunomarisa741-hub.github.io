@@ -1,0 +1,15 @@
+{
+  "name": "beijing-axis-voxel",
+  "version": "1.0.0",
+  "description": "中轴千年：北京中轴线 金·元·明·清·当代 的城址变迁与体素建筑群网页，含导览路线",
+  "scripts": {
+    "build": "node tools/build.mjs .",
+    "build:dist": "node tools/build.mjs dist"
+  },
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "three": "^0.170.0"
+  }
+}

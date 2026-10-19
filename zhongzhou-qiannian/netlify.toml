@@ -1,0 +1,12 @@
+# Netlify：连接本仓库后自动构建并发布 dist/index.html
+[build]
+  command = "npm run build:dist"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=600"

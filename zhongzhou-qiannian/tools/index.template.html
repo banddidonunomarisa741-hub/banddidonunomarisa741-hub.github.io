@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="description" content="北京中轴线的城址变迁：真实比例总图叠合金中都、元大都、明清北京与今天，再逐一进入各朝代的体素建筑群。">
+<meta name="theme-color" content="#5c3a2a">
+<title>中轴千年</title>
+<style>
+:root {
+  --sky: linear-gradient(180deg, #f6c9a8 0%, #f3b896 45%, #eea98a 100%);
+  --card: rgba(88, 56, 40, 0.80);
+  --card-strong: rgba(70, 44, 32, 0.92);
+  --ink: #fff7ec;
+  --ink-dim: rgba(255, 247, 236, 0.72);
+  --ink-faint: rgba(255, 247, 236, 0.45);
+  --pill: rgba(255, 249, 241, 0.88);
+  --pill-ink: #6b4733;
+  --pill-line: rgba(107, 71, 51, 0.16);
+  --accent: #c8402a;
+  --accent-ink: #fff;
+  --gold: #e7b65a;
+  --geo: #2f6f9a;
+  --serif: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", "SimSun", "Songti TC", serif;
+  --sans: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --r: 12px;
+  --gap: 12px;
+  --shadow: 0 6px 24px rgba(60, 30, 20, 0.18);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #eea98a; background: var(--sky); font-family: var(--sans); color: var(--ink); -webkit-tap-highlight-color: transparent; transition: background 1.2s; }
+body { overscroll-behavior: none; }
+button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
+#app { position: fixed; inset: 0; }
+#app canvas { display: block; touch-action: none; outline: none; }
+
+/* 标注 */
+#labels { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+.lb { position: absolute; left: 0; top: 0; white-space: nowrap; font-size: 12px; line-height: 1; padding: 4px 7px; border-radius: 999px; background: rgba(255, 250, 243, 0.9); color: #5a3b2a; box-shadow: 0 1px 4px rgba(60, 30, 20, 0.18); will-change: transform; pointer-events: auto; cursor: pointer; display: none; }
+.lb::after { content: ""; position: absolute; left: 50%; bottom: -4px; width: 1px; height: 4px; background: rgba(90, 59, 42, 0.5); }
+.lb.axis { background: var(--accent); color: #fff; font-weight: 600; font-family: var(--serif); font-size: 13px; }
+.lb.axis::after { background: var(--accent); }
+.lb.geo { background: rgba(255, 255, 255, 0.55); color: var(--geo); font-style: italic; font-family: var(--serif); box-shadow: none; border: 1px dashed rgba(47, 111, 154, 0.45); }
+.lb.geo::after { display: none; }
+.lb.area { background: rgba(70, 44, 32, 0.78); color: #ffe9c7; font-family: var(--serif); font-size: 14px; letter-spacing: 2px; }
+.lb.minor, .lb.gate, .lb.road { font-size: 11px; padding: 3px 6px; background: rgba(255, 250, 243, 0.78); }
+.lb.sel { outline: 2px solid var(--gold); }
+.night .lb { background: rgba(28, 30, 54, 0.82); color: #f3e7cf; }
+.night .lb.axis { background: var(--accent); color: #fff; }
+.night .lb.geo { background: rgba(20, 30, 60, 0.6); color: #9cc8ef; border-color: rgba(156, 200, 239, 0.4); }
+
+/* 左上标题卡 */
+.title-card { position: fixed; left: calc(var(--gap) + env(safe-area-inset-left)); top: calc(var(--gap) + env(safe-area-inset-top)); background: var(--card); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-radius: var(--r); padding: 12px 16px 12px; box-shadow: var(--shadow); max-width: 320px; }
+.title-card h1 { margin: 0; font-family: var(--serif); font-size: 26px; letter-spacing: 6px; font-weight: 700; }
+.title-card .sub { margin: 4px 0 0; font-size: 11px; color: var(--ink-dim); letter-spacing: 1px; }
+.era-line { margin-top: 10px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.era-line b { font-family: var(--serif); font-size: 22px; color: var(--gold); }
+.era-line .yrs { font-size: 13px; font-variant-numeric: tabular-nums; }
+.era-line .scene { font-size: 11px; color: var(--ink-dim); }
+.title-card .scale-note { margin: 8px 0 0; font-size: 10.5px; line-height: 1.5; color: var(--ink-faint); }
+
+/* 右上控制条 */
+.ctrl { position: fixed; right: calc(var(--gap) + env(safe-area-inset-right)); top: calc(var(--gap) + env(safe-area-inset-top)); display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.bar { display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 999px; background: var(--pill); color: var(--pill-ink); box-shadow: var(--shadow); }
+.bar button { padding: 7px 12px; border-radius: 999px; font-size: 13px; white-space: nowrap; transition: background .2s, color .2s; }
+.bar button:hover { background: rgba(107, 71, 51, 0.08); }
+.bar button.on { background: var(--accent); color: var(--accent-ink); }
+.bar .sep { width: 1px; height: 18px; background: var(--pill-line); margin: 0 2px; }
+.bar.tools button { font-size: 12.5px; padding: 6px 11px; }
+.bar .s { display: none; }
+
+/* 底部时间轴 */
+.timeline { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom)); display: flex; align-items: center; gap: 6px; padding: 6px; border-radius: 999px; background: var(--card-strong); box-shadow: var(--shadow); }
+.timeline .nav { width: 34px; height: 34px; border-radius: 50%; font-size: 18px; color: var(--ink-dim); }
+.timeline .nav:hover { background: rgba(255, 255, 255, 0.08); color: var(--ink); }
+.track { position: relative; display: flex; gap: 4px; }
+.track::before { content: ""; position: absolute; left: 24px; right: 24px; top: 50%; height: 1px; background: rgba(255, 255, 255, 0.18); }
+.era-btn { position: relative; display: flex; flex-direction: column; align-items: center; min-width: 72px; padding: 6px 10px; border-radius: 999px; transition: background .25s; }
+.era-btn .n { font-family: var(--serif); font-size: 20px; line-height: 1.1; }
+.era-btn .y { font-size: 10.5px; color: var(--ink-dim); font-variant-numeric: tabular-nums; margin-top: 2px; white-space: nowrap; }
+.era-btn.on { background: var(--accent); }
+.era-btn.on .y { color: rgba(255, 255, 255, 0.85); }
+.era-btn.loading .n::after { content: "·"; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+.hint { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(76px + env(safe-area-inset-bottom)); font-size: 11.5px; color: rgba(60, 36, 26, 0.75); background: rgba(255, 249, 241, 0.55); padding: 4px 12px; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+.night .hint { color: rgba(240, 230, 210, 0.8); background: rgba(20, 24, 50, 0.5); }
+
+/* 侧栏 */
+#panel { position: fixed; left: calc(var(--gap) + env(safe-area-inset-left)); top: 196px; bottom: 96px; width: 300px; display: flex; flex-direction: column; background: var(--card); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; transition: transform .35s, opacity .35s; }
+#panel.hide { transform: translateX(-110%); opacity: 0; pointer-events: none; }
+.tabs { display: flex; gap: 2px; padding: 8px 8px 0; }
+.tabs button { flex: 1; padding: 7px 0; font-size: 13px; color: var(--ink-dim); border-radius: 8px 8px 0 0; }
+.tabs button.on { color: var(--ink); background: rgba(255, 255, 255, 0.08); font-weight: 600; }
+.tab-body { flex: 1; overflow-y: auto; padding: 12px 14px 16px; font-size: 13px; line-height: 1.7; background: rgba(255, 255, 255, 0.08); }
+.tab-body::-webkit-scrollbar { width: 6px; } .tab-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 3px; }
+.tab-body h3 { margin: 12px 0 4px; font-size: 12px; color: var(--gold); font-weight: 600; letter-spacing: 1px; }
+.tab-body h3:first-child { margin-top: 0; }
+.tab-body p { margin: 0 0 8px; color: var(--ink); }
+.tab-body ul { margin: 0; padding-left: 18px; color: var(--ink-dim); }
+.tab-body li { margin: 2px 0; }
+.node-list { list-style: none; padding: 0 !important; margin: 0; counter-reset: n; }
+.node-list li { position: relative; margin: 0; }
+.node-list button { width: 100%; text-align: left; display: flex; align-items: center; gap: 10px; padding: 6px 6px; border-radius: 8px; color: var(--ink); }
+.node-list button:hover { background: rgba(255, 255, 255, 0.08); }
+.node-list .dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--gold); flex: none; background: var(--card-strong); position: relative; z-index: 1; }
+.node-list li:not(:last-child)::after { content: ""; position: absolute; left: 10px; top: 20px; bottom: -8px; width: 2px; background: rgba(231, 182, 90, 0.35); }
+.node-list .nm { font-family: var(--serif); font-size: 14px; }
+.node-list .tg { font-size: 11px; color: var(--ink-faint); margin-left: auto; }
+.chg { padding: 8px 10px; border-radius: 8px; background: rgba(0, 0, 0, 0.12); margin-bottom: 8px; }
+.chg b { display: inline-block; font-size: 11px; color: #fff; background: var(--accent); border-radius: 4px; padding: 1px 6px; margin-right: 6px; }
+.tab-body .chip { font-size: 11.5px; padding: 3px 9px; border-radius: 999px; background: rgba(255, 255, 255, 0.14); color: var(--ink); }
+.tab-body .chg strong { font-family: var(--serif); }
+.heritage { list-style: none; padding: 0 !important; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.heritage button { width: 100%; text-align: left; padding: 6px 8px; border-radius: 8px; background: rgba(0, 0, 0, 0.12); font-size: 12.5px; color: var(--ink); }
+.heritage button span { color: var(--gold); margin-right: 4px; font-variant-numeric: tabular-nums; }
+
+/* 信息卡 */
+#info { position: fixed; right: calc(var(--gap) + env(safe-area-inset-right)); top: 116px; width: 320px; max-height: calc(100% - 220px); overflow-y: auto; background: var(--card-strong); border-radius: var(--r); box-shadow: var(--shadow); padding: 16px 16px 14px; transition: transform .3s, opacity .3s; }
+#info.hide { transform: translateX(110%); opacity: 0; pointer-events: none; }
+#info .tag { font-size: 11px; color: var(--gold); letter-spacing: 1px; }
+#info h2 { margin: 4px 0 8px; font-family: var(--serif); font-size: 22px; letter-spacing: 2px; }
+#info p { margin: 0; font-size: 13px; line-height: 1.75; color: var(--ink); white-space: pre-line; }
+#info .close { position: absolute; right: 8px; top: 8px; width: 30px; height: 30px; border-radius: 50%; font-size: 18px; color: var(--ink-dim); }
+#info .close:hover { background: rgba(255, 255, 255, 0.1); }
+#info .row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+#info .chip { font-size: 12px; padding: 5px 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); color: var(--ink); }
+#info .chip.on { background: var(--c, var(--accent)); }
+#info .lin { flex-basis: 100%; font-size: 11px; color: var(--gold); letter-spacing: 1px; margin-top: 2px; }
+#info .chip.fly { background: rgba(231, 182, 90, 0.2); color: #ffe2a6; }
+
+/* 小地图与指北 */
+#mini { position: fixed; right: calc(var(--gap) + env(safe-area-inset-right)); bottom: 96px; border-radius: 10px; overflow: hidden; box-shadow: var(--shadow); border: 2px solid rgba(255, 249, 241, 0.85); cursor: crosshair; background: #b9ae98; }
+#mini canvas { display: block; }
+#mini .lbl { position: absolute; left: 6px; top: 4px; font-size: 10px; color: #5a3b2a; background: rgba(255, 250, 243, 0.8); padding: 1px 5px; border-radius: 4px; pointer-events: none; }
+#compass { position: fixed; right: calc(var(--gap) + env(safe-area-inset-right)); width: 44px; height: 44px; border-radius: 50%; background: var(--pill); box-shadow: var(--shadow); display: grid; place-items: center; color: var(--pill-ink); font-family: var(--serif); font-weight: 700; }
+#compass .needle { position: absolute; inset: 0; transition: transform .1s linear; }
+#compass .needle::before { content: "北"; position: absolute; left: 50%; top: 3px; transform: translateX(-50%); font-size: 12px; color: var(--accent); }
+#compass .needle::after { content: ""; position: absolute; left: 50%; top: 18px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 9px solid var(--accent); transform: translateX(-50%); }
+
+#fps { position: fixed; left: 50%; top: 10px; transform: translateX(-50%); font: 12px/1 ui-monospace, monospace; background: rgba(0, 0, 0, 0.55); color: #9f9; padding: 4px 8px; border-radius: 6px; }
+
+/* 载入 */
+#loading { position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none; transition: opacity .4s; }
+#loading.hide { opacity: 0; }
+#loading .box { background: var(--card-strong); padding: 18px 26px; border-radius: 14px; box-shadow: var(--shadow); text-align: center; }
+#loading .blocks { display: flex; gap: 4px; justify-content: center; margin-bottom: 10px; }
+#loading .blocks i { width: 10px; height: 10px; background: var(--gold); animation: hop 1s infinite ease-in-out; }
+#loading .blocks i:nth-child(2) { animation-delay: .15s; background: var(--accent); }
+#loading .blocks i:nth-child(3) { animation-delay: .3s; background: #3f9a63; }
+#loading .blocks i:nth-child(4) { animation-delay: .45s; background: #3366b5; }
+@keyframes hop { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+#loading p { margin: 0; font-size: 13px; color: var(--ink-dim); }
+#loading b { color: var(--ink); font-family: var(--serif); }
+
+/* 切换朝代时的大字提示 */
+#flash { position: fixed; left: 50%; top: 42%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; opacity: 0; transition: opacity .5s; color: #fff; text-shadow: 0 2px 18px rgba(60, 20, 10, 0.55); }
+#flash.show { opacity: 1; }
+#flash b { display: block; font-family: var(--serif); font-size: 64px; letter-spacing: 12px; line-height: 1.1; }
+#flash span { font-size: 15px; letter-spacing: 3px; }
+@media (max-width: 760px) { #flash b { font-size: 44px; } }
+
+/* 说明弹窗 */
+#about { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(30, 18, 12, 0.45); z-index: 10; }
+#about.hide { display: none; }
+#about .doc { width: min(680px, calc(100% - 32px)); max-height: calc(100% - 48px); overflow-y: auto; background: #fbf5ec; color: #3d2a1f; border-radius: 14px; padding: 24px 26px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); position: relative; }
+#about h2 { margin: 0 0 4px; font-family: var(--serif); font-size: 24px; letter-spacing: 4px; }
+#about h3 { margin: 18px 0 6px; font-size: 14px; color: var(--accent); }
+#about p, #about li { font-size: 13.5px; line-height: 1.8; }
+#about ul { padding-left: 20px; margin: 0; }
+#about table { border-collapse: collapse; width: 100%; font-size: 12.5px; margin-top: 6px; }
+#about td, #about th { border: 1px solid #e3d5c3; padding: 5px 8px; text-align: left; vertical-align: top; }
+#about th { background: #f3e7d7; }
+#about .close { position: absolute; right: 12px; top: 10px; width: 32px; height: 32px; border-radius: 50%; font-size: 20px; color: #7a5a48; }
+#about .close:hover { background: #efe3d3; }
+#about kbd { font: 12px ui-monospace, monospace; background: #efe3d3; border-radius: 4px; padding: 1px 5px; }
+
+/* 总图：朝代色标注、经纬度刻度 */
+.lb.era { background: var(--c, #555); color: #fff; font-family: var(--serif); font-size: 15px; font-weight: 700; letter-spacing: 2px; padding: 5px 10px; }
+.lb.era::after { background: var(--c, #555); height: 6px; bottom: -6px; }
+.lb.era.dim { opacity: 0.35; }
+.lb.coord { background: transparent; box-shadow: none; color: #6d6450; font: 11px/1 ui-monospace, Menlo, Consolas, monospace; padding: 2px 3px; pointer-events: none; }
+.lb.coord::after { display: none; }
+.lb.mapicon { font-size: 11px; padding: 3px 6px; }
+.night .lb.coord { color: #b8b0a0; background: transparent; }
+.era-btn .n::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 2px; background: var(--c, transparent); margin-right: 5px; vertical-align: 3px; }
+.era-btn.map .n { font-size: 17px; }
+.coord-line { margin: 6px 0 0; font: 11px/1.5 ui-monospace, Menlo, Consolas, monospace; color: var(--ink-dim); }
+.coord-line b { font-family: var(--sans); font-weight: 600; color: #ffe2a6; }
+#story { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(104px + env(safe-area-inset-bottom)); width: min(560px, calc(100% - 24px)); background: var(--card-strong); border-radius: var(--r); box-shadow: var(--shadow); padding: 12px 16px; display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; align-items: baseline; }
+#story.hide { opacity: 0; pointer-events: none; transition: opacity .3s; }
+#story .yr { grid-row: span 2; font-family: var(--serif); font-size: 26px; font-weight: 700; color: var(--c, var(--gold)); white-space: nowrap; font-variant-numeric: tabular-nums; }
+#story .tt { font-family: var(--serif); font-size: 17px; letter-spacing: 2px; }
+#story .tx { font-size: 13px; line-height: 1.65; color: var(--ink); }
+#story .go { grid-column: 2; justify-self: start; margin-top: 4px; font-size: 12.5px; padding: 5px 12px; border-radius: 999px; background: var(--c, var(--accent)); color: #fff; }
+#legend { position: fixed; left: calc(var(--gap) + env(safe-area-inset-left)); bottom: calc(14px + env(safe-area-inset-bottom)); background: var(--pill); color: var(--pill-ink); border-radius: 10px; padding: 8px 10px; box-shadow: var(--shadow); font-size: 12px; display: grid; gap: 4px; }
+#legend.hide { display: none; }
+#legend b { font-family: var(--serif); font-size: 12.5px; margin-bottom: 2px; }
+#legend span { display: flex; align-items: center; gap: 6px; }
+#legend i { width: 18px; height: 4px; border-radius: 2px; background: var(--c); }
+#legend i.dash { background: repeating-linear-gradient(90deg, var(--c) 0 5px, transparent 5px 8px); }
+#veil { position: fixed; inset: 0; background: var(--sky); opacity: 0; pointer-events: none; transition: opacity .22s ease; z-index: 5; }
+#veil.on { opacity: 1; }
+.map-only, .era-only { }
+body.in-map .era-only, body.in-map #mini { display: none !important; }
+body:not(.in-map) .map-only { display: none !important; }
+
+/* 导览：站号标签 */
+.lb.stop { background: #f5c242; color: #4a2f12; font-weight: 700; font-size: 12px; padding: 4px 8px; }
+.lb.stop::after { background: #c79420; }
+.lb.stop.sel { background: var(--accent); color: #fff; outline: 2px solid #ffe08a; }
+.night .lb.stop { background: #f5c242; color: #4a2f12; }
+
+/* 导览卡片 */
+#tourCard { position: fixed; right: calc(var(--gap) + env(safe-area-inset-right)); top: 112px; bottom: 92px; width: min(420px, 34vw); display: flex; flex-direction: column; background: var(--card-strong); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; z-index: 3; }
+#tourCard.hide { display: none; }
+.tc-photo { position: relative; flex: none; aspect-ratio: 3 / 2; background: #2a1c15; overflow: hidden; }
+.tc-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .25s; }
+.tc-photo.has img { opacity: 1; }
+.tc-ph { position: absolute; inset: 0; display: grid; place-content: center; gap: 6px; padding: 18px; text-align: center; color: var(--ink-dim); font-size: 12.5px; line-height: 1.6; background: repeating-linear-gradient(135deg, rgba(255,255,255,0.04) 0 10px, rgba(255,255,255,0.0) 10px 20px); }
+.tc-ph b { color: var(--ink); font-size: 14px; font-weight: 600; }
+.tc-photo.has .tc-ph { display: none; }
+.tc-credit { position: absolute; right: 6px; bottom: 6px; max-width: calc(100% - 12px); font-size: 10.5px; color: #fff; background: rgba(0, 0, 0, 0.45); padding: 2px 6px; border-radius: 4px; }
+.tc-credit:empty { display: none; }
+.tc-main { flex: 1; overflow-y: auto; padding: 12px 16px 6px; min-height: 0; }
+.tc-head { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; font-size: 11.5px; color: var(--gold); letter-spacing: 1px; }
+.tc-head #tcRoute { color: var(--ink-dim); letter-spacing: 0; }
+#tcName { margin: 4px 0 2px; font-family: var(--serif); font-size: 24px; letter-spacing: 2px; }
+#tcTag { font-size: 12px; color: var(--ink-dim); margin-bottom: 8px; }
+#tcBody { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; font-size: 13px; line-height: 1.7; }
+#tcBody dt { color: #fff; background: rgba(200, 64, 42, 0.85); border-radius: 4px; padding: 0 6px; height: 21px; line-height: 21px; font-size: 11.5px; margin-top: 2px; }
+#tcBody dd { margin: 0; color: var(--ink); }
+.tc-nav { flex: none; display: flex; gap: 6px; padding: 8px 12px 10px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+.tc-nav button { flex: 1; padding: 8px 0; border-radius: 8px; background: rgba(255, 255, 255, 0.1); font-size: 13px; }
+.tc-nav button:hover { background: rgba(255, 255, 255, 0.18); }
+.tc-nav button:disabled { opacity: 0.35; cursor: default; }
+.tc-nav #tcNext { background: var(--accent); }
+.tc-nav #tcPlay.on { background: #f5c242; color: #4a2f12; }
+.tc-nav #tcExit { flex: none; width: 40px; }
+.tc-bar { flex: none; height: 3px; background: rgba(255, 255, 255, 0.08); }
+.tc-bar i { display: block; height: 100%; width: 0; background: #f5c242; }
+body.touring #info, body.touring #panel, body.touring #mini, body.touring #compass, body.touring .hint, body.touring #flash { display: none !important; }
+
+/* 路线选择 */
+#routePick { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(30, 18, 12, 0.45); z-index: 9; }
+#routePick.hide { display: none; }
+#routePick .doc { width: min(520px, calc(100% - 24px)); background: var(--card-strong); border-radius: 14px; padding: 18px 18px 14px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); position: relative; }
+#routePick h2 { margin: 0 0 2px; font-family: var(--serif); font-size: 20px; letter-spacing: 2px; }
+#routePick p { margin: 0 0 12px; font-size: 12.5px; color: var(--ink-dim); }
+#routeList { display: grid; gap: 10px; }
+.route { text-align: left; display: grid; gap: 3px; padding: 12px 14px; border-radius: 10px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.08); }
+.route:hover { background: rgba(255, 255, 255, 0.14); border-color: #f5c242; }
+.route b { font-family: var(--serif); font-size: 17px; letter-spacing: 1px; color: #ffe2a6; }
+.route span { font-size: 13px; }
+.route em { font-style: normal; font-size: 12px; color: var(--ink-dim); }
+.route i { font-style: normal; font-size: 11.5px; color: var(--gold); }
+#routeClose { position: absolute; right: 10px; top: 8px; width: 30px; height: 30px; border-radius: 50%; font-size: 18px; color: var(--ink-dim); }
+
+/* 手机 */
+@media (max-width: 760px) {
+  :root { --gap: 8px; }
+  .title-card { padding: 9px 12px; max-width: calc(100vw - 72px); }
+  .title-card h1 { font-size: 19px; letter-spacing: 3px; }
+  .title-card .sub { font-size: 10px; display: none; }
+  .era-line { margin-top: 6px; gap: 6px; }
+  .era-line b { font-size: 17px; }
+  .era-line .yrs { font-size: 11px; }
+  .era-line .scene, .title-card .scale-note { display: none; }
+  .ctrl { gap: 6px; }
+  .bar button { padding: 6px 9px; font-size: 12px; }
+  #timeBar { flex-direction: column; border-radius: 22px; gap: 2px; }
+  #timeBar .sep { width: 18px; height: 1px; margin: 2px 0; }
+  #timeBar button { width: 36px; height: 36px; padding: 0; display: grid; place-items: center; font-size: 14px; }
+  #timeBar .l { display: none; } #timeBar .s { display: inline; font-size: 17px; }
+  .bar.tools { position: fixed; left: 50%; transform: translateX(-50%); right: auto; top: auto; bottom: calc(72px + env(safe-area-inset-bottom)); max-width: calc(100vw - 16px); overflow-x: auto; scrollbar-width: none; }
+  .bar.tools::-webkit-scrollbar { display: none; }
+  .bar.tools button { font-size: 12px; padding: 6px 10px; }
+  .timeline { bottom: calc(8px + env(safe-area-inset-bottom)); left: 8px; right: 8px; transform: none; justify-content: space-between; padding: 4px; gap: 2px; }
+  .timeline .nav { display: none; }
+  .track { flex: 1; justify-content: space-between; gap: 2px; }
+  .track::before { left: 12px; right: 12px; }
+  .era-btn { min-width: 0; flex: 1; padding: 5px 2px; }
+  .era-btn .n { font-size: 16px; white-space: nowrap; }
+  .era-btn .n::before { width: 6px; height: 6px; margin-right: 3px; }
+  .era-btn.map .n { font-size: 14px; }
+  .era-btn .y { font-size: 8.5px; white-space: nowrap; letter-spacing: -0.2px; }
+  .hint { display: none; }
+  #panel { left: 8px; right: 8px; width: auto; top: auto; bottom: calc(118px + env(safe-area-inset-bottom)); height: 46vh; }
+  #panel.hide { transform: translateY(120%); }
+  #info { left: 8px; right: 8px; width: auto; top: auto; bottom: calc(118px + env(safe-area-inset-bottom)); max-height: 42vh; }
+  #info.hide { transform: translateY(120%); }
+  #mini { display: none; }
+  #compass { width: 38px; height: 38px; }
+  #tourCard { left: 8px; right: 8px; width: auto; top: auto; bottom: calc(8px + env(safe-area-inset-bottom)); height: 46vh; }
+  .tc-photo { aspect-ratio: auto; height: 34%; }
+  #tcName { font-size: 20px; }
+  .tc-main { padding: 8px 12px 4px; }
+  #tcBody { font-size: 12.5px; }
+  body.touring .timeline, body.touring .bar.tools, body.touring #timeBar { display: none !important; }
+  #story { bottom: calc(118px + env(safe-area-inset-bottom)); padding: 10px 12px; grid-template-columns: 1fr; }
+  #story .yr { grid-row: auto; font-size: 20px; }
+  #story .go { grid-column: 1; }
+  #legend { display: none; }
+  .coord-line { font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="labels"></div>
+
+<header class="title-card">
+  <h1>中轴千年</h1>
+  <p class="sub">北京中轴线 · 金元明清今 · 城址变迁与体素建筑</p>
+  <div class="era-line"><b id="eraName">总图</b><span class="yrs" id="eraYears"></span><span class="scene" id="eraScene"></span></div>
+  <p class="coord-line" id="coordLine"></p>
+  <p class="scale-note" id="scaleNote"></p>
+</header>
+
+<nav class="ctrl">
+  <div class="bar" id="timeBar">
+    <button data-t="morning" class="on">晨</button><button data-t="dusk">昏</button><button data-t="night">夜</button>
+    <span class="sep"></span>
+    <button id="btnRotate"><span class="l">自动环绕：关</span><span class="s" aria-hidden="true">⟳</span></button>
+    <button id="btnReset"><span class="l">复位视角</span><span class="s" aria-hidden="true">⌂</span></button>
+    <button id="btnOverview" class="era-only"><span class="l">全景</span><span class="s" aria-hidden="true">⊞</span></button>
+  </div>
+  <div class="bar tools" id="toolBar">
+    <button id="btnPlay" class="map-only">播放变迁</button>
+    <button id="tgAxis" class="era-only">中轴线</button>
+    <button id="tgLabels" class="on">地名</button>
+    <button id="tgChange" class="era-only">变迁</button>
+    <button id="btnTour" class="era-only">游览路线</button>
+    <button id="btnPanel">导览</button>
+    <button id="btnAbout">说明</button>
+  </div>
+</nav>
+
+<aside id="panel" class="hide">
+  <div class="tabs" id="tabs">
+    <button data-tab="overview" class="on">概述</button>
+    <button data-tab="nodes">轴线</button>
+    <button data-tab="changes">变化</button>
+    <button data-tab="heritage" id="tabHeritage">遗产</button>
+  </div>
+  <div class="tab-body" id="tabBody"></div>
+</aside>
+
+<section id="info" class="hide" aria-live="polite">
+  <button class="close" id="infoClose" aria-label="关闭">×</button>
+  <div class="tag" id="infoTag"></div>
+  <h2 id="infoName"></h2>
+  <p id="infoDesc"></p>
+  <div class="row" id="infoEras"></div>
+</section>
+
+<footer class="timeline">
+  <button class="nav" id="eraPrev" aria-label="上一时期">‹</button>
+  <div class="track" id="track"></div>
+  <button class="nav" id="eraNext" aria-label="下一时期">›</button>
+</footer>
+<div class="hint">拖动旋转 · 滚轮缩放 · 右键平移 · 1/2/3 晨昏夜 · ←/→ 切换时期 · M 回总图 · 靠近建筑可见细部 · F 帧率</div>
+
+<section id="story" class="hide" aria-live="polite"><span class="yr" id="storyYear"></span><span class="tt" id="storyTitle"></span><span class="tx" id="storyText"></span><button class="go" id="storyGo">进入</button></section>
+<div id="legend" class="hide">
+  <b>城址（真实比例）</b>
+  <span><i style="--c:#2f8f83"></i>金中都 1153</span>
+  <span><i style="--c:#3557b7"></i>元大都 1267</span>
+  <span><i style="--c:#c8402a"></i>明北京 1420/1553</span>
+  <span><i style="--c:#d9a21b"></i>清北京 1644（沿用明城）</span>
+  <span><i style="--c:#3a3a44"></i>今二环路</span>
+  <span><i class="dash" style="--c:#6b6458"></i>今三环路 · 细线为经纬网</span>
+</div>
+<div id="veil"></div>
+
+<section id="tourCard" class="hide" aria-live="polite">
+  <div class="tc-photo" id="tcPhoto">
+    <img id="tcImg" alt="">
+    <div class="tc-ph"><b>实拍照片待补充</b><span id="tcShot"></span></div>
+    <span class="tc-credit" id="tcCredit"></span>
+  </div>
+  <div class="tc-main">
+    <div class="tc-head"><span id="tcNum"></span><span id="tcPart"></span><span id="tcRoute"></span></div>
+    <h2 id="tcName"></h2>
+    <div id="tcTag"></div>
+    <dl id="tcBody"></dl>
+  </div>
+  <div class="tc-nav"><button id="tcPrev">上一站</button><button id="tcPlay">暂停</button><button id="tcNext">下一站</button><button id="tcExit" aria-label="结束导览">×</button></div>
+  <div class="tc-bar"><i id="tcBar"></i></div>
+</section>
+
+<div id="routePick" class="hide">
+  <div class="doc">
+    <button id="routeClose" aria-label="关闭">×</button>
+    <h2>游览路线 · <span id="routeEra"></span></h2>
+    <p>箭头会一站一站跳过去，镜头停在与实拍照片相同的角度；可随时暂停、上一站、下一站（键盘 ← → 空格）。</p>
+    <div id="routeList"></div>
+  </div>
+</div>
+
+<div id="mini"><canvas id="miniCv"></canvas><span class="lbl">真实比例总图</span></div>
+<div id="compass" title="指北针"><div class="needle" id="needle"></div></div>
+<div id="fps" hidden></div>
+<div id="flash"><b id="flashName"></b><span id="flashYears"></span></div>
+
+<div id="loading"><div class="box"><div class="blocks"><i></i><i></i><i></i><i></i></div><p>正在营建 <b id="loadingName">元大都</b> …</p></div></div>
+
+<div id="about" class="hide">
+  <div class="doc">
+    <button class="close" id="aboutClose" aria-label="关闭">×</button>
+    <h2>中轴千年</h2>
+    <p>北京中轴线的城址变迁与体素建筑群。打开先看<b>总图</b>：按真实经纬度叠合<b>金中都、元大都、明清北京与今天的二环、三环</b>，可以看清中轴线从约东经 116.344°（金）移到 116.391°（元以后），以及明代北缩南扩的过程。每次切换朝代都会先回到总图，标出下一座城的位置和迁移方向，再进入该朝代的体素场景。</p>
+    <h3>两种比例</h3>
+    <p><b>总图是真实比例</b>（1 格约 25 米），城墙、宫城、水系和中轴线按经纬度绘制，细线为经纬网，0.01° 约合东西 0.85 公里、南北 1.1 公里。<b>朝代场景是示意比例</b>：南北顺序与东西方位依据史料和官方地图，建筑放大、空旷路段压缩，次要街巷从略。场景四周的刻度标出真实经纬度，刻度间距不均匀就是压缩所在；左上角随时显示画面中心的坐标和今天对应的地名，右下角小地图为真实比例。</p>
+    <h3>同一套构件，五种朝代语法</h3>
+    <ul>
+      <li><b>金（宋金式）</b>：绿琉璃瓦，屋面平缓、出檐深远，斗拱硕大，正脊两端用鸱尾；门道为木过梁的方形门洞；宫殿四周以回廊围成廊院；城内为里坊。</li>
+      <li><b>元</b>：白琉璃瓦、绿琉璃檐脊（“覆以白磁瓦，碧琉璃饰其檐脊”），主殿为前殿—柱廊—寝殿的工字殿；夯土城墙；御苑有毡帐。</li>
+      <li><b>明</b>：黄琉璃色偏深橙，旋子彩画；城墙包砖、券门；奉天殿九间、两侧斜廊。</li>
+      <li><b>清</b>：明黄琉璃，屋面举架更陡，斗拱缩小，和玺彩画沥粉贴金；太和殿十一间、两侧卡墙。</li>
+      <li><b>今</b>：清代建筑的保护延续，加上天安门广场建筑群与复建的永定门等。</li>
+    </ul>
+    <p>点击任一重要建筑，信息卡下方有<b>四朝对照</b>：例如宫城正门“应天门 → 崇天门 → 午门”，外朝正殿“大安殿 → 大明殿 → 皇极殿 → 太和殿”，点一下就会经总图飞到另一个朝代的对应建筑。<b>靠近建筑</b>时会自动换成两倍精度的细模，可以看到瓦垄、门钉、格扇、彩画金线和栏杆望柱；门前有河的地方都修了桥。</p>
+    <h3>建筑形制怎么看</h3>
+    <table>
+      <tr><th>屋顶</th><th>等级与用途</th><th>画面中的例子</th></tr>
+      <tr><td>重檐庑殿</td><td>最高等级：四坡五脊，两重屋檐</td><td>太和殿、乾清宫、午门正楼、太庙享殿</td></tr>
+      <tr><td>重檐歇山</td><td>次一等：上部两侧有红色三角“山花”</td><td>天安门、太和门、保和殿、各城门楼</td></tr>
+      <tr><td>攒尖</td><td>方、圆、八角形殿亭，汇于宝顶</td><td>中和殿、交泰殿、祈年殿、景山五亭</td></tr>
+      <tr><td>硬山 / 悬山</td><td>等级较低的廊庑、民居</td><td>千步廊、东西庑、街边商铺</td></tr>
+    </table>
+    <p style="margin-top:8px">间数（面阔）也是等级标志：太和殿清代十一间、明代九间；天安门清代九间、明代五间。瓦色同样有讲究：皇宫用黄琉璃，天坛用蓝琉璃，城门、钟鼓楼用灰瓦绿剪边；元代宫殿据《南村辍耕录》“覆以白磁瓦，碧琉璃饰其檐脊”。</p>
+    <h3>操作</h3>
+    <p>拖动旋转、滚轮或双指缩放、右键或双指平移；<kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 切换晨、昏、夜；<kbd>←</kbd><kbd>→</kbd> 切换时期；<kbd>M</kbd> 回总图；<kbd>R</kbd> 复位视角；<kbd>O</kbd> 全景；<kbd>F</kbd> 显示帧率。点击建筑可查看名称、年代与形制，信息卡下方可在不同时期之间对照。</p>
+    <h3>资料</h3>
+    <p>范成大《揽辔录》、楼钥《北行日录》（金中都宫阙）、《南村辍耕录·宫阙制度》《析津志》《日下旧闻考》，北京中轴线申报世界遗产文本，金中都、元大都考古报告，故宫博物院、天坛公园等公开资料。城址经纬度为约百米精度的近似值。金中都宫殿的具体形制、元代南郊坛位置等缺乏确切记载，按同时代建筑示意处理。</p>
+    <p style="color:#9a7a66;font-size:12px">技术：Three.js 与自写体素引擎（剔除隐藏面、环境光遮蔽），全部模型由代码生成。</p>
+  </div>
+</div>
+<script src="photos/credits.js"></script>
+<script>/*APP*/</script>
+</body>
+</html>

@@ -20,7 +20,7 @@ let engine;
 try {
   engine = new Engine($('app'));
 } catch (err) {
-  $('loading').querySelector('p').innerHTML = '当前浏览器无法启用 WebGL 2，无法显示三维场景。<br>请使用新版 Chrome、Edge、Safari 或微信内置浏览器打开。';
+  $('loading').querySelector('p').innerHTML = '当前浏览器无法启用 WebGL 2，无法显示三维场景。<br>请用新版 Chrome 或 Edge 打开本文件；如仍不显示，请在浏览器设置中开启“使用图形加速 / 硬件加速”后重启浏览器。';
   throw err;
 }
 const mobile = engine.isMobile;

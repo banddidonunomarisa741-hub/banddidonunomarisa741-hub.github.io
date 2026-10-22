@@ -603,7 +603,7 @@ function setCam(v) {
 }
 
 // ---------------------------------------------------------------------------
-// 导览（路线、箭头、固定机位、实拍照片卡）
+// 导览（路线、箭头、固定机位、讲解卡片）
 // ---------------------------------------------------------------------------
 const tour = new Tour(engine, {
   boxOf: (id) => findItem(id),
@@ -622,7 +622,6 @@ const tour = new Tour(engine, {
     const i = ix + nx * iz;
     return [m.sight.top[i], m.sight.heroTop[i], m.sight.heroIdx[i]];
   },
-  credits: () => window.PHOTO_CREDITS || {},
   select: (id) => select(id, false, true),
   // 导览时站点标签（带序号）替换同一建筑原有的名称标签
   labelsSet: (extra, hide) => {

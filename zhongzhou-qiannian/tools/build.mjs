@@ -1,6 +1,6 @@
 // 打包：worker 与主程序合并内联为单个 index.html（可直接双击打开，也可放 GitHub Pages）
 import * as esbuild from 'esbuild';
-import { readFile, writeFile, mkdir, cp } from 'node:fs/promises';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -33,6 +33,4 @@ const banner = '/* 中轴千年 · 北京中轴线体素建筑群 | 内含 three
 const html = tpl.replace('<script>/*APP*/</script>', () => `<script>${banner}${appCode}</script>`);
 await mkdir(out, { recursive: true });
 await writeFile(path.join(out, 'index.html'), html);
-// 实拍照片目录（photos/站点名.jpg 与署名 credits.js）随页面一起发布
-if (path.resolve(out) !== root) await cp(path.join(root, 'photos'), path.join(out, 'photos'), { recursive: true });
 console.log(`index.html ${(html.length / 1024).toFixed(0)} KB (worker ${(workerCode.length / 1024).toFixed(0)} KB) → ${out}`);

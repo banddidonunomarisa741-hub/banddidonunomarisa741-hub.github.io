@@ -1,4 +1,4 @@
-// 导览：箭头在建筑之间跳跃前进，镜头按固定机位飞到每一站，右侧（手机为底部）显示实拍照片与“历史 / 用途 / 看点”
+// 导览：箭头在建筑之间跳跃前进，镜头按固定机位飞到每一站，右侧（手机为底部）显示“历史 / 用途 / 看点”
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { STOPS, routesFor, stopText } from './tourdata.js';
@@ -52,7 +52,7 @@ function dashed(points, width, y, on = 3, off = 2.2) {
 }
 
 export class Tour {
-  // hooks: { boxOf(id), nameOf(id), tagOf(id), descOf(id), labelsSet(extra, hideIds), select(id), metaNodes(), toLL(x,z), sightAt(x,z), credits(), onStart(), onEnd() }
+  // hooks: { boxOf(id), nameOf(id), tagOf(id), descOf(id), labelsSet(extra, hideIds), select(id), metaNodes(), toLL(x,z), sightAt(x,z), onStart(), onEnd() }
   constructor(engine, hooks) {
     this.engine = engine;
     this.hooks = hooks;
@@ -78,13 +78,6 @@ export class Tour {
     $('tcExit').onclick = () => this.stop();
     $('routeClose').onclick = () => $('routePick').classList.add('hide');
     $('routePick').addEventListener('click', (e) => { if (e.target === $('routePick')) $('routePick').classList.add('hide'); });
-    // 照片按“站点-时期.jpg → 站点.jpg”的顺序找，都没有就显示机位说明
-    const img = $('tcImg');
-    img.addEventListener('load', () => { $('tcPhoto').classList.add('has'); });
-    img.addEventListener('error', () => {
-      const next = this.photoQueue && this.photoQueue.shift();
-      if (next) { this.setCredit(next.key); img.src = next.src; } else $('tcPhoto').classList.remove('has');
-    });
   }
 
   // —— 路线选择 ——
@@ -213,13 +206,10 @@ export class Tour {
     this.render(s, T);
     this.dwell = 0;
     this.dwellMax = this.readTime(T, s.id);
-    // 预载下一站照片
-    const n = this.list[k + 1];
-    if (n && this.photoOK()) { const im = new Image(); im.src = `photos/${n.id}.jpg`; }
   }
 
   // 按设定的方位角、仰角取景。树木、城墙挡住视线时抬高仰角或左右偏转；
-  // 重点建筑挡在前面时（示意比例下院落被压缩，实拍机位常落在前一座门楼里）改为半透明
+  // 重点建筑挡在前面时（示意比例下院落被压缩，机位常落在前一座门楼里）改为半透明
   viewFor(box, id, [az, el, dm]) {
     const c = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());
@@ -296,8 +286,6 @@ export class Tour {
     $('tcNext').disabled = true;
   }
 
-  photoOK() { return this.era === 'qing' || this.era === 'modern'; }
-
   readTime(T, id) {
     const len = T ? (T.hist + T.use + T.look).length : (this.hooks.descOf(id) || '').length;
     return Math.max(5, Math.min(11, 3 + len / 28));
@@ -318,25 +306,8 @@ export class Tour {
     } else {
       body.innerHTML = `<dt>介绍</dt><dd>${this.hooks.descOf(s.id) || ''}</dd>`;
     }
-    // 实拍照片：photos/站点.jpg，缺失时显示机位说明
-    const ph = $('tcPhoto');
-    ph.hidden = !this.photoOK();
-    if (this.photoOK()) {
-      ph.classList.remove('has');
-      $('tcShot').textContent = T ? `建议机位：${T.shot}` : '';
-      const keys = [`${s.id}-${this.era}`, s.id];
-      this.photoQueue = keys.map((key) => ({ key, src: `photos/${key}.jpg` }));
-      const first = this.photoQueue.shift();
-      this.setCredit(first.key);
-      $('tcImg').src = first.src;
-    }
     $('tcBar').style.width = '0%';
     $('tourCard').scrollTop = 0;
-  }
-
-  setCredit(key) {
-    const cr = this.hooks.credits()[key];
-    $('tcCredit').textContent = cr ? `图片：${cr}` : '';
   }
 
   update(dt) {
